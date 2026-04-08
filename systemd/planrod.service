@@ -1,0 +1,25 @@
+[Unit]
+Description=HiveRod PlanRod - Cognitive Planning Service (HCC)
+Documentation=https://github.com/rolivape/planrod
+After=network.target ollama.service memoryrod.service
+Wants=ollama.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/plan
+ExecStart=/opt/plan/bin/plan serve --mcp-port 9101 --metrics-port 9111 --db /opt/plan/data/plan.db --cross-service-mode lite --memoryrod-url http://localhost:9100/mcp
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+Environment="OLLAMA_HOST=http://localhost:11434"
+LimitNOFILE=65535
+
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/opt/plan/data /opt/plan/sessions
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
